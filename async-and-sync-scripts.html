@@ -1,0 +1,83 @@
+<html>
+
+  <head>
+    <script type='text/javascript'>
+      var currentReadyState = document.readyState;
+      var messages = [];
+      messages.push('Executing top of head');
+    </script>
+
+    <script type='text/javascript'>
+      var script = document.createElement('script');
+      script.src = './C.js';
+      script.type = 'text/javascript';
+      script.async = true;
+      var head = document.head;
+      head.appendChild(script);
+      messages.push('Injected async script C near bottom of head');
+
+      script = document.createElement('script');
+      script.src = './D.js';
+      script.type = 'text/javascript';
+      script.async = false;
+      head = document.head;
+      head.appendChild(script);
+      messages.push('Injected sync script D at bottom of head');
+
+      script = document.createElement('script');
+      script.src = './B.js';
+      script.type = 'text/javascript';
+      script.async = false;
+      head = document.head;
+      head.insertBefore(script, head.firstChild);
+      messages.push('Injected sync script B near top of head');
+
+      script = document.createElement('script');
+      script.src = './A.js';
+      script.type = 'text/javascript';
+      script.async = true;
+      head = document.head;
+      head.insertBefore(script, head.firstChild);
+      messages.push('Injected async script A at top of head');
+
+      document.addEventListener('DOMContentLoaded', function recordDOMLoad() {
+        messages.push('DOM loaded and parsed');
+      });
+
+      window.addEventListener('load', function recordLoad() {
+        messages.push('All content loaded');
+      });
+
+      document.addEventListener('readystatechange', function recordDocumentReadyState() {
+        messages.push('Document readyState changed from "' + currentReadyState + '" to "' + document.readyState + '"');
+        currentReadyState = document.readyState;
+      });
+
+      setTimeout(function appendParagraphs() {
+        messages.forEach(function appendParagraph(message) {
+          var p = document.createElement('p');
+          p.textContent = message;
+          var body = document.body;
+          body.appendChild(p);
+        })
+      }, 1000);
+    </script>
+
+    <script type='text/javascript'>
+      messages.push('Executing bottom of head');
+    </script>
+  </head>
+
+  <body>
+    <script type='text/javascript'>
+      messages.push('Executing top of body');
+    </script>
+
+    <p>Initial body paragraph</p>
+
+    <script type='text/javascript'>
+      messages.push('Executing bottom of body');
+    </script>
+  </body>
+
+</html>
